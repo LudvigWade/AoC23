@@ -1,0 +1,35 @@
+import java.io.*;
+import java.util.*;
+
+public class Day6Task2 {
+
+	public static void main(String[] args) throws FileNotFoundException {
+		Scanner s = new Scanner(new File("data"));
+		s.next();
+		int sum = 1;
+		int[] times = new int[4];
+		int[] distance = new int[4];
+		for (int i = 0; i<4; i++) {
+			times[i] = s.nextInt();
+		}
+		int time = Integer.valueOf(""+times[0]+times[1]+times[2]+times[3]);
+		s.next();
+		for (int i = 0; i<4; i++) {
+			distance[i] = s.nextInt();
+		}
+		int distance = Integer.valueOf(""+distance[0]+distance[1]+distance[2]+distance[3]);
+		for (int j = 0; j<times.length; j++) {
+			int nbrOfWays = 0;
+			for (int i = 0; i<=times[j]; i++) {
+				if (i*(times[j]-i) > distance[j]) {
+					nbrOfWays++;
+				}
+			}
+			sum *= nbrOfWays;
+		}
+		System.out.println(sum);
+		
+
+	}
+
+}

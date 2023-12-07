@@ -1,0 +1,4 @@
+seeds: 100 200 300 400 500 600 700 800
+
+humidity-to-location map:
+101 10 10
