@@ -35,7 +35,7 @@ public class Day8Task2 {
 					continue;
 				}
 			}
-			indSteps[i] = steps;
+			indSteps[i] = steps; // Use this to find LCM or use internet to find LCM of numbers.
 			System.out.println(steps);
 		}
 	}

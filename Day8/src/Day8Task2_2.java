@@ -1,62 +1,92 @@
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
-public class Day8Task2_2 implements Threads {
+public class Day8Task2_2 {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Scanner s = new Scanner(new File("data"));
 		s.useDelimiter("\\W+");
 		char[] instructions = s.nextLine().toCharArray();
-		List<Node> list = new ArrayList<Node>();
-		List<Node> current = new ArrayList<Node>();
-		List<Node> next = new ArrayList<Node>();
+		ConcurrentHashMap<String,Dual> map = new ConcurrentHashMap<String,Dual>();
+		ConcurrentHashMap<Long,Integer> containsZ = new ConcurrentHashMap<Long,Integer>();
+		
+		List<String> start = new ArrayList<String>();
 		while (s.hasNext()) {
 			String a = s.next();
 			String b = s.next();
 			String c = s.next();
 			if (a.charAt(2) == 'A') {
-				current.add(new Node(a,b,c));
+				start.add(a);
 			}
-			list.add(new Node(a,b,c));
+			map.put(a,new Dual(b,c));
 		}
-		int steps = 0;
-		boolean finished = false;
-		while (!finished) {
-			if (steps%10000 == 0) {
-				System.out.println(steps);
-			}
-			if (instructions[steps%instructions.length] == 'L') {
-				for (Node n : current) {
-					next.add(list.get(list.indexOf(new Node(n.left,null,null))));
+		List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0; i<start.size(); i++) {
+			final int k = i;
+			threads.add(new Thread(() -> {
+				Long steps = (long) 0;
+				String current = start.get(k);
+				String next = null;
+				while(true) {
+					if (instructions[(int) (steps%instructions.length)] == 'L') {
+						next = map.get(current).left;
+					} else {
+						next = map.get(current).right;
+					}
+					steps++;
+					current = next;
+					if (current.charAt(2) == 'Z') {
+						if (containsZ.containsKey(steps)) {
+							containsZ.put(steps, containsZ.get(steps)+1);
+						} else {
+							containsZ.put(steps, 1);
+						}
+					}
 				}
-			} else if (instructions[steps%instructions.length] == 'R') {
-				for (Node n : current) {
-					next.add(list.get(list.indexOf(new Node(n.right,null,null))));
-				}
-			}
-			steps++;
-			finished = true;
-			for (Node n : next) {
-				if (n.name.charAt(2) != 'Z') {
-					finished = false;
-				}
-			}
-			current.clear();
-			current.addAll(next);
-			next.clear();
+			}));
+			threads.get(i).start();
 		}
-		System.out.println(steps);
+		Thread t = new Thread(() -> {
+			boolean finished = false;
+			Long prevPrint = (long) 0;
+			try {
+				while (!finished) {
+					if (containsZ.isEmpty()) {
+						Thread.sleep(100);
+					}
+					Long minkey = Collections.min(containsZ.keySet());
+					if (containsZ.get(minkey) == 6) {
+						for (Thread t1 : threads) {
+							t1.interrupt();
+						}
+						System.out.println(minkey);
+						finished = true;
+					} else {
+						containsZ.remove(minkey);
+					}
+					if (minkey-prevPrint > 1000000) {
+						System.out.println(minkey);
+						prevPrint = minkey;
+					}
+				}
+			} catch (InterruptedException e) {
+				for (Thread t1 : threads) {
+					t1.interrupt();
+				}
+				System.out.println("Interrupted");
+			}
+		});
+		t.start();
 	}
 	
-	private static class Node {
-		String name;
+	private static class Dual {
 		String left;
 		String right;
 		
-		public Node(String one, String two, String three) {
-			name = one;
-			left = two;
-			right = three;
+		public Dual(String one, String two) {
+			left = one;
+			right = two;
 		}
 		
 		@Override
@@ -64,16 +94,10 @@ public class Day8Task2_2 implements Threads {
 			if (this == o) {
 				return true;
 			}
-			if ((o instanceof String)) {
-				if (this.name.equals((String) o)) {
-					return true;
-				}
+			if (!(o instanceof Dual)) {
 				return false;
 			}
-			if (!(o instanceof Node)) {
-				return false;
-			}
-			if (this.name.equals(((Node) o).name)) {
+			if (this.left.equals(((Dual) o).left) && this.right.equals(((Dual) o).right)) {
 				return true;
 			}
 			return false;
