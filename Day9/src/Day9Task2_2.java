@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class Day9Task1 {
+public class Day9Task2_2 {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Scanner s = new Scanner(new File("data"));
@@ -10,7 +10,7 @@ public class Day9Task1 {
 			String[] nbrs = s.nextLine().split("\\s");
 			int[] start = new int[nbrs.length];
 			for (int i = 0; i<nbrs.length; i++) {
-				start[i] = Integer.parseInt(nbrs[i]);
+				start[i] = Integer.parseInt(nbrs[nbrs.length-i-1]);
 			}
 			boolean allZero = false;
 			int[] current = start;
