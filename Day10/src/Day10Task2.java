@@ -5,11 +5,15 @@ public class Day10Task2 {
 	char[][] data;
 	int[][] from;
 	int[][] to;
+	boolean[][] counted;
+	String GREEN = "\u001B[32m";
+	String RESET = "\u001B[0m";
 	
 	public Day10Task2(char[][] data) {
 		this.data = data;
 		from = new int[data.length][data[1].length];
 		to = new int[data.length][data[1].length];
+		counted = new boolean[data.length][data[1].length];
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -50,6 +54,7 @@ public class Day10Task2 {
 		boolean isWall = false;
 		int firstWall = 0;
 		int lastWall = 0;
+		int prevSumEnclosed = 0;
 		for (i = 0; i<d.from.length; i++) {
 			for (j = 0; j<d.from[i].length; j++) {
 				if (d.from[i][j]>0 && !isWall) {
@@ -57,7 +62,9 @@ public class Day10Task2 {
 					lastWall = d.to[i][j];
 					isWall = true;
 				} else if (d.from[i][j] == 0 && isWall) {
-					if (!(firstWall == (d.from[i][j-1]+2)%4 || lastWall == (d.to[i][j-1]+2)%4 || firstWall == d.to[i][j-1] || lastWall == d.from[i][j-1])) {
+					if (!((firstWall == 1 && (d.from[i][j-1]+2)%4 == 1) || (firstWall == 3 && (d.from[i][j-1]+2)%4 == 3) || 
+							(lastWall == 1 &&  (d.to[i][j-1]+2)%4 == 1) || (lastWall == 3 &&  (d.to[i][j-1]+2)%4 == 3) || 
+							firstWall == d.to[i][j-1] || lastWall == d.from[i][j-1])) {
 						inside = !inside;
 					}
 					isWall = false;
@@ -66,14 +73,18 @@ public class Day10Task2 {
 				
 				if (!isWall && inside) {
 					sumEnclosed++;
+					d.counted[i][j] = true;
 				}
 			}
+//			System.out.println("Line " + i + ": " + (sumEnclosed - prevSumEnclosed));
+//			System.out.print((sumEnclosed - prevSumEnclosed)+ " ");
+			prevSumEnclosed = sumEnclosed;
 			inside = false;
 			isWall = false;
 			firstWall = 0;
 			lastWall = 0;
 		}
-		
+//		d.print();
 		System.out.println(sumEnclosed);
 		
 	}
@@ -169,6 +180,44 @@ public class Day10Task2 {
 			return temp;
 		default:
 			return null;
+		}
+	}
+	
+	private void print() {
+		for (int i = 0; i<140; i++) {
+			for (int j = 0; j<140; j++) {
+				if (j == 139) {
+					if (this.to[i][j] == 0) {
+						System.out.println(" 0 ");
+					} else if (this.to[i][j] == 1) {
+						System.out.println(" ↑ ");
+					} else if (this.to[i][j] == 2) {
+						System.out.println(" → ");
+					} else if (this.to[i][j] == 3) {
+						System.out.println(" ↓ ");
+					} else if (this.to[i][j] == 4) {
+						System.out.println(" ← ");
+					}
+				} else {
+					if (this.counted[i][j]) {
+						if (this.to[i][j] == 0) {
+							System.out.print("[0]");
+						}
+					} else {
+						if (this.to[i][j] == 0) {
+							System.out.print(" 0 ");
+						} else if (this.to[i][j] == 1) {
+							System.out.print(" ↑ ");
+						} else if (this.to[i][j] == 2) {
+							System.out.print(" → ");
+						} else if (this.to[i][j] == 3) {
+							System.out.print(" ↓ ");
+						} else if (this.to[i][j] == 4) {
+							System.out.print(" ← ");
+						}
+					}
+				}
+			}
 		}
 	}
 
