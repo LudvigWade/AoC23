@@ -1,3 +1,6 @@
+#AOC ignore data
+data
+
 .metadata
 bin/
 tmp/
