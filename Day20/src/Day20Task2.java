@@ -41,9 +41,6 @@ public class Day20Task2 {
 		boolean started = false;
 		while (!started) {
 			presses++;
-			if (presses%1000 == 0) {
-				System.out.println(presses);
-			}
 			ArrayList<Truple> queue = new ArrayList<Truple>();
 			queue.add(new Truple("broadcaster",false,null));
 			while(!queue.isEmpty()) {
@@ -52,6 +49,9 @@ public class Day20Task2 {
 				if (temp.high) {
 					if (n != null) {
 						n.highSignal(queue, temp.sender);
+						if (n.toString().equals("hp")) {
+							System.out.println(temp.sender.toString() + " has sent: " + presses);
+						}
 					}
 					highSignals++;
 				} else {
@@ -59,10 +59,6 @@ public class Day20Task2 {
 						n.lowSignal(queue, temp.sender);
 					}
 					lowSignals++;
-					if (n.toString().equals("rx")) {
-						started = true;
-						break;
-					}
 				}
 			}
 		}
