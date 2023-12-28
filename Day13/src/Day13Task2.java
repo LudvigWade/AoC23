@@ -18,7 +18,7 @@ public class Day13Task2 {
 			}
 			int error;
 			int matchind = -1;
-			for (int k = 0; k<data.size(); k++) { //Check if a string is equal to it's mirror
+			for (int k = 0; k<data.size(); k++) { // Compare each string to it's "mirror", character by character. If more than 1 error found or no errors found, go to next.
 				error = 0;
 				for (int i = 0; i<=k; i++) {
 					if (k+1+i > data.size()-1) {
@@ -43,7 +43,7 @@ public class Day13Task2 {
 				sum += (matchind+1)*100;
 				continue;
 			}
-			for (int k = 0; k<data.get(0).length(); k++) { //Check if a string is equal to it's mirror
+			for (int k = 0; k<data.get(0).length(); k++) { // Compare each string to it's "mirror", character by character. If more than 1 error found or no errors found, go to next.
 				error = 0;
 				for (int i = 0; i<=k; i++) {
 					if (k+1+i > data.get(0).length()-1) {
